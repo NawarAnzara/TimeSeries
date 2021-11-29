@@ -57,22 +57,23 @@ if st.sidebar.button('Forecast'):
                     st.write(df)
                     #df = df.drop(['level_1'], axis = 1 )
                     fig1 = plt.figure(figsize = (16,10))
-                    plt.plot(df)
+                    plt.plot(df.index, df[f'{option}'])
                     plt.legend()
                     st.pyplot(fig1)
                     
+                    df = df.dropna()
                     
                   
                     
                     
 
                    
-                    st.write(adfuller(df))
-                    df_diff = df.diff().dropna()
+                    st.write(adfuller(df[f'{option}']))
+                    df_diff = df[f'{option}'].diff().dropna()
                     st.write(adfuller(df_diff))
                     st.write(df_diff)
                     st.write(plot_acf(df_diff))
-                    df = df.dropna()
+                    
                     
                    
                     train, test = train_test_split(df, test_size =0.2)
@@ -81,8 +82,8 @@ if st.sidebar.button('Forecast'):
                     testShape = test.shape[0]
                     st.write(testShape)
                    
-                    results = pm.auto_arima(train[f'{option}'],start_p=0, start_q=0, d=1, D=1, max_p=5, max_d=5, max_q=5, start_P=0, start_Q=0, max_P=5, max_D=5, max_Q=5, random_state=20, n_fits=50,stepwise=True, suppress_warnings=True,
-                           trace=True, seasonal = True, m=12)
+                    results = pm.auto_arima(train[f'{option}'],start_p=0, start_q=0, d=1, D=1, max_p=5, max_d=5, max_q=5, start_P=0, start_Q=0, max_P=5, max_D=5, max_Q=5, random_state=20, n_fits=20,stepwise=True, suppress_warnings=True,
+                           trace=True, seasonal = True, m=12, trend='ct')
                     st.write(results)
                     st.write(results.summary())
                     st.write(results.plot_diagnostics())
